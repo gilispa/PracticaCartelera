@@ -17,17 +17,39 @@ import androidx.compose.ui.unit.dp
 import islas.gilberto.cartelera.ui.theme.CarteleraTheme
 
 @Composable
-fun PeliculasScreen(onPeliculaClick: (Int) -> Unit) {
-
+fun PeliculasScreen(
+    correo: String,
+    onPeliculaClick: (Int) -> Unit,
+    onCerrarSesion: () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Películas",
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
-        Text(
-            text = "Películas",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(16.dp)
-        )
+                Text(
+                    text = correo,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            TextButton(onClick = onCerrarSesion) {
+                Text("Cerrar sesión")
+            }
+        }
 
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
@@ -90,6 +112,10 @@ fun PeliculaItem(
 @Composable
 fun PeliculasScreenPreview() {
     CarteleraTheme {
-        PeliculasScreen(onPeliculaClick = {})
+        PeliculasScreen(
+            correo = "prueba@correo.com",
+            onPeliculaClick = {},
+            onCerrarSesion = {}
+        )
     }
 }

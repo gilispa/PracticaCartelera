@@ -11,10 +11,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
 import islas.gilberto.cartelera.ui.theme.CarteleraTheme
 
 @Composable
-fun LoginScreen(onLoginOk: () -> Unit) {
+fun LoginScreen(onLoginOk: () -> Unit, onRegistrarse: () -> Unit) {
 
     var usuario by rememberSaveable { mutableStateOf("") }
     var contrasena by rememberSaveable { mutableStateOf("") }
@@ -42,8 +43,11 @@ fun LoginScreen(onLoginOk: () -> Unit) {
                 usuario = it
                 hayError = false
             },
-            label = { Text("Usuario") },
+            label = { Text("Correo electrónico") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
             isError = hayError,
             modifier = Modifier.fillMaxWidth()
         )
@@ -73,15 +77,30 @@ fun LoginScreen(onLoginOk: () -> Unit) {
 
         Button(
             onClick = {
-                if (usuario.trim() == "admin" && contrasena == "admin") {
-                    onLoginOk()
-                } else {
+                if (usuario.isBlank() || contrasena.isBlank()) {
                     hayError = true
+                } else {
+                    FirebaseAuth.getInstance()
+                        .signInWithEmailAndPassword(
+                            usuario.trim(),
+                            contrasena
+                        )
+                        .addOnCompleteListener { tarea ->
+                            if (tarea.isSuccessful) {
+                                onLoginOk()
+                            } else {
+                                hayError = true
+                            }
+                        }
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Ingresar")
+        }
+
+        TextButton(onClick = onRegistrarse) {
+            Text("¿No tienes cuenta? Regístrate")
         }
     }
 }
@@ -90,6 +109,6 @@ fun LoginScreen(onLoginOk: () -> Unit) {
 @Composable
 fun LoginScreenPreview() {
     CarteleraTheme {
-        LoginScreen(onLoginOk = {})
+        LoginScreen(onLoginOk = { }, onRegistrarse = { })
     }
 }
